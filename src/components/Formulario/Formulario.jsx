@@ -17,7 +17,7 @@ export default function Formulario() {
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
-    fetch("http://192.168.1.16:3000/plantas")
+    fetch("https://gaia-api-test-production.up.railway.app/plantas")
       .then((response) => response.json())
       .then((data) => {
         setPlantas(data);
@@ -78,7 +78,7 @@ export default function Formulario() {
       observaciones,
     };
 
-    fetch("http://192.168.1.16:3000/plantas", {
+    fetch("https://gaia-api-test-production.up.railway.app/plantas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
