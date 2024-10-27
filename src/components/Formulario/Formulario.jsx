@@ -4,7 +4,7 @@ import "./Formulario.css";
 export default function Formulario() {
   const [idPlanta, setIdPlanta] = useState("");
   const [alturaCrecimiento, setAlturaCrecimiento] = useState("");
-  const [tempAmbiente, setTempAmbiente] = useState("");
+  const [tempAmbiente, setTempAmbiente] = useState(null);
   const [caudalAgua, setCaudalAgua] = useState("");
   const [ph, setPh] = useState("");
   const [humedadAmbiente, setHumedadAmbiente] = useState("");
@@ -27,7 +27,7 @@ export default function Formulario() {
       .catch((error) => {
         console.error("Error obteniendo las plantas:", error);
       });
-      
+
     fetch("https://gaia-api-test-production.up.railway.app/clima?city=La Rioja")
       .then((response) => response.json())
       .then((data) => {
@@ -37,11 +37,12 @@ export default function Formulario() {
             temperatura: current.temp_c,
             icono: current.condition.icon,
           });
+          setTempAmbiente(current.temp_c)
         }
       })
       .catch((error) => {
         console.error("Error obteniendo los datos del clima:", error);
-        setErrorClima("No se pudo obtener el clima.");
+        setErrorClima("No se pudo obtener la temperatura ambiente, pruebe a ingresarla manualmente");
       });
   }, []);
 
@@ -134,7 +135,6 @@ export default function Formulario() {
   return (
     <div className="contact-form">
       <span className="heading">Formulario de registros</span>
-      
 
       <form>
         <label htmlFor="idPlanta">
@@ -168,8 +168,15 @@ export default function Formulario() {
           onChange={(event) => setAlturaCrecimiento(event.target.value)}
         />
 
-        <label htmlFor="tempAmbiente">
-          Temperatura ambiente:{" "}
+        {clima ? (
+          <div className="clima">
+            <p>Temperatura actual: {clima.temperatura} °C</p>
+            <img src={clima.icono} alt="Ícono del clima" />
+          </div>
+        ) : (
+          <>
+          <p>{errorClima || "Cargando clima..."}</p>
+          <label htmlFor="tempAmbiente">
           {errores.tempAmbiente && (
             <p className="error">{errores.tempAmbiente}</p>
           )}
@@ -180,14 +187,8 @@ export default function Formulario() {
           placeholder="En grados celsius"
           onChange={(event) => setTempAmbiente(event.target.value)}
         />
-        {clima ? (
-        <div className="clima">
-          <p>Temperatura actual: {clima.temperatura} °C</p>
-          <img src={clima.icono} alt="Ícono del clima" />
-        </div>
-      ) : (
-        <p>{errorClima || "Cargando clima..."}</p>
-      )}
+        </>
+        )}
 
         <label htmlFor="caudalAgua">
           Caudal de agua:{" "}
