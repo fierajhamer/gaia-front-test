@@ -15,6 +15,8 @@ export default function Formulario() {
   const [errores, setErrores] = useState({});
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [clima, setClima] = useState(null);
+  const [errorClima, setErrorClima] = useState(null);
 
   useEffect(() => {
     fetch("https://gaia-api-test-production.up.railway.app/plantas")
@@ -25,6 +27,22 @@ export default function Formulario() {
       .catch((error) => {
         console.error("Error obteniendo las plantas:", error);
       });
+      
+    fetch("https://gaia-api-test-production.up.railway.app/clima?city=La Rioja")
+      .then((response) => response.json())
+      .then((data) => {
+        const { current } = data;
+        if (current) {
+          setClima({
+            temperatura: current.temp_c,
+            icono: current.condition.icon,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error obteniendo los datos del clima:", error);
+        setErrorClima("No se pudo obtener el clima.");
+      });
   }, []);
 
   const validarFormulario = () => {
@@ -34,7 +52,8 @@ export default function Formulario() {
       nuevosErrores.idPlanta = "Debe seleccionar una planta.";
     }
     if (!alturaCrecimiento || alturaCrecimiento <= 0) {
-      nuevosErrores.alturaCrecimiento = "Ingrese una altura válida (mayor a 0).";
+      nuevosErrores.alturaCrecimiento =
+        "Ingrese una altura válida (mayor a 0).";
     }
     if (!tempAmbiente || tempAmbiente < -10 || tempAmbiente > 50) {
       nuevosErrores.tempAmbiente = "Debe estar entre -10°C y 50°C.";
@@ -115,11 +134,20 @@ export default function Formulario() {
   return (
     <div className="contact-form">
       <span className="heading">Formulario de registros</span>
+      
 
       <form>
-        <label htmlFor="idPlanta">Planta: {errores.idPlanta && <p className="error">{errores.idPlanta}</p>}</label>
-        <select value={idPlanta} onChange={(event) => setIdPlanta(event.target.value)}>
-          <option value="" disabled defaultValue={""}>Seleccione una planta</option>
+        <label htmlFor="idPlanta">
+          Planta:{" "}
+          {errores.idPlanta && <p className="error">{errores.idPlanta}</p>}
+        </label>
+        <select
+          value={idPlanta}
+          onChange={(event) => setIdPlanta(event.target.value)}
+        >
+          <option value="" disabled defaultValue={""}>
+            Seleccione una planta
+          </option>
           {plantas.map((planta) => (
             <option key={planta.id_planta} value={planta.id_planta}>
               {planta.alumno_asignado}
@@ -127,7 +155,12 @@ export default function Formulario() {
           ))}
         </select>
 
-        <label htmlFor="alturaCrecimiento">Altura de crecimiento: {errores.alturaCrecimiento && <p className="error">{errores.alturaCrecimiento}</p>}</label>
+        <label htmlFor="alturaCrecimiento">
+          Altura de crecimiento:{" "}
+          {errores.alturaCrecimiento && (
+            <p className="error">{errores.alturaCrecimiento}</p>
+          )}
+        </label>
         <input
           type="number"
           value={alturaCrecimiento}
@@ -135,15 +168,31 @@ export default function Formulario() {
           onChange={(event) => setAlturaCrecimiento(event.target.value)}
         />
 
-        <label htmlFor="tempAmbiente">Temperatura ambiente: {errores.tempAmbiente && <p className="error">{errores.tempAmbiente}</p>}</label>
+        <label htmlFor="tempAmbiente">
+          Temperatura ambiente:{" "}
+          {errores.tempAmbiente && (
+            <p className="error">{errores.tempAmbiente}</p>
+          )}
+        </label>
         <input
           type="number"
           value={tempAmbiente}
           placeholder="En grados celsius"
           onChange={(event) => setTempAmbiente(event.target.value)}
         />
+        {clima ? (
+        <div className="clima">
+          <p>Temperatura actual: {clima.temperatura} °C</p>
+          <img src={clima.icono} alt="Ícono del clima" />
+        </div>
+      ) : (
+        <p>{errorClima || "Cargando clima..."}</p>
+      )}
 
-        <label htmlFor="caudalAgua">Caudal de agua: {errores.caudalAgua && <p className="error">{errores.caudalAgua}</p>}</label>
+        <label htmlFor="caudalAgua">
+          Caudal de agua:{" "}
+          {errores.caudalAgua && <p className="error">{errores.caudalAgua}</p>}
+        </label>
         <input
           type="number"
           value={caudalAgua}
@@ -151,7 +200,9 @@ export default function Formulario() {
           onChange={(event) => setCaudalAgua(event.target.value)}
         />
 
-        <label htmlFor="ph">pH: {errores.ph && <p className="error">{errores.ph}</p>}</label>
+        <label htmlFor="ph">
+          pH: {errores.ph && <p className="error">{errores.ph}</p>}
+        </label>
         <input
           type="number"
           value={ph}
@@ -159,7 +210,12 @@ export default function Formulario() {
           onChange={(event) => setPh(event.target.value)}
         />
 
-        <label htmlFor="humedadAmbiente">Humedad ambiente (%): {errores.humedadAmbiente && <p className="error">{errores.humedadAmbiente}</p>}</label>
+        <label htmlFor="humedadAmbiente">
+          Humedad ambiente (%):{" "}
+          {errores.humedadAmbiente && (
+            <p className="error">{errores.humedadAmbiente}</p>
+          )}
+        </label>
         <input
           type="number"
           value={humedadAmbiente}
@@ -167,7 +223,12 @@ export default function Formulario() {
           onChange={(event) => setHumedadAmbiente(event.target.value)}
         />
 
-        <label htmlFor="humedadSuelo">Humedad del suelo (%): {errores.humedadSuelo && <p className="error">{errores.humedadSuelo}</p>}</label>
+        <label htmlFor="humedadSuelo">
+          Humedad del suelo (%):{" "}
+          {errores.humedadSuelo && (
+            <p className="error">{errores.humedadSuelo}</p>
+          )}
+        </label>
         <input
           type="number"
           value={humedadSuelo}
@@ -181,7 +242,9 @@ export default function Formulario() {
           onChange={(event) => setObservaciones(event.target.value)}
         />
 
-        <button type="button" onClick={handleConfirmarEnvio}>Enviar datos</button>
+        <button type="button" onClick={handleConfirmarEnvio}>
+          Enviar datos
+        </button>
 
         {mensaje && <p className="mensaje">{mensaje}</p>}
       </form>
@@ -190,17 +253,20 @@ export default function Formulario() {
         <div className="modal">
           <div className="modal-content">
             <h2>Confirmar Envío</h2>
-            <p>Planta de: {plantas.find(planta => planta.id_planta == idPlanta)?.alumno_asignado}</p>
+            <p>
+              Planta de:{" "}
+              {
+                plantas.find((planta) => planta.id_planta == idPlanta)
+                  ?.alumno_asignado
+              }
+            </p>
             <p>Altura de crecimiento: {alturaCrecimiento} cm</p>
             <p>Temperatura ambiente: {tempAmbiente} °C</p>
             <p>Caudal de agua: {caudalAgua} ml/h</p>
             <p>pH: {ph}</p>
             <p>Humedad ambiente: {humedadAmbiente} %</p>
             <p>Humedad del suelo: {humedadSuelo} %</p>
-            <button
-              onClick={handleEnviarDatos}
-              disabled={enviando}
-            >
+            <button onClick={handleEnviarDatos} disabled={enviando}>
               {enviando ? "Enviando..." : "Confirmar"}
             </button>
             <button onClick={handleCancelarEnvio}>Cancelar</button>

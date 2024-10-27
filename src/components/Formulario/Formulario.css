@@ -91,6 +91,13 @@ textarea {
     text-align: center;
 }
 
+.clima {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
 @media only screen and (max-width: 768px) {
     .contact-form {
         background-color: #212121;
